@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">BeaconTest</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_beacon">BeaconActivity</string>
+    <string name="title_activity_ranging">RangingActivity</string>
 
 </resources>
