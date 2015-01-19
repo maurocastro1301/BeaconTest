@@ -2,6 +2,7 @@ package uk.ac.southwales.beacontest;
 
 import android.app.Application;
 
+import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;

@@ -16,9 +16,6 @@ import java.util.Collection;
 
 public class RangingActivity extends BaseActivity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
-    private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
-    private BaseActivity activity;
-
     private TextView info;
 
     @Override
@@ -28,7 +25,6 @@ public class RangingActivity extends BaseActivity implements BeaconConsumer {
         activity = this;
 
         beaconManager.bind(this);
-        beaconManager.debug = true;
 
         info = (TextView) findViewById(R.id.info);
     }

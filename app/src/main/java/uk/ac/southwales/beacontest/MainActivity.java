@@ -15,15 +15,10 @@ import org.altbeacon.beacon.BeaconTransmitter;
 import java.util.Arrays;
 
 
-public class MainActivity extends ActionBarActivity {
-    private MainActivity activity;
-
+public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        activity = this;
 
         Button buttonBeacon = (Button) findViewById(R.id.buttonBeacon);
         buttonBeacon.setOnClickListener(new View.OnClickListener() {
@@ -40,5 +35,10 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(new Intent(activity, RangingActivity.class));
             }
         });
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_main;
     }
 }
