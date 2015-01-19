@@ -16,6 +16,7 @@ import uk.ac.southwales.beacontest.R;
  */
 public class Notification {
     private BaseActivity activity;
+    private NotificationManager notificationManager;
     private String title;
     private String text;
     private int notificationId;
@@ -24,7 +25,10 @@ public class Notification {
     public Notification(BaseActivity activity, String title, String text) {
         this.activity = activity;
         this.title = title;
+        this.text = text;
         this.notificationId = 1;
+        this.notificationManager = (NotificationManager)
+                activity.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public Notification(BaseActivity activity, String title, String text, boolean isSticky) {
@@ -42,9 +46,6 @@ public class Notification {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                NotificationManager notificationManager = (NotificationManager)
-                        activity.getSystemService(Context.NOTIFICATION_SERVICE);
-
                 Intent intent = new Intent(activity, activity.getClass());
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(activity,
@@ -70,5 +71,13 @@ public class Notification {
                 notificationManager.notify(notificationId, n);
             }
         });
+    }
+
+    public void removeNotification(){
+        notificationManager.cancel(notificationId);
+    }
+
+    public void removeAll(){
+        notificationManager.cancelAll();
     }
 }

@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name=".BeaconActivity"
-            android:label="@string/title_activity_beacon">
+            android:label="@string/title_activity_beacon"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".RangingActivity"
