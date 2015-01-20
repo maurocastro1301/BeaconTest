@@ -27,7 +27,6 @@ public class BeaconActivity extends BaseActivity {
     private Button stopBroadcast;
     private Notification notification;
     private BeaconTransmitter beaconTransmitter;
-    private String NOTIFICATION_ID = "BEACON_ACTIVITY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +49,17 @@ public class BeaconActivity extends BaseActivity {
                 public void onClick(View view) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Beacon beacon = new Beacon.Builder()
-                                .setId1("2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")
-                                .setId2("1")
-                                .setId3("2")
+                                .setId1("90DFF031-7297-4D0A-BD09-DE6D758DAB87")
+                                .setId2("EEA83F58-4DDF-43EA-BE47-EA184554E22D")
+                                .setId3("EAC334BA-A3DE-4194-9762-14631DE90E89")
                                 .setManufacturer(0x0118)
                                 .setTxPower(-59)
                                 .setDataFields(Arrays.asList(new Long[]{0l}))
                                 .build();
                         BeaconParser beaconParser = new BeaconParser()
-                                .setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25");
+                                //.setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25");
+                                // use iBeacon spec instead
+                                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
                         beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
                         beaconTransmitter.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
                         beaconTransmitter.setAdvertiseTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
