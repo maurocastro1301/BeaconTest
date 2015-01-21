@@ -34,89 +34,94 @@ public class BeaconActivity extends BaseActivity {
 
         info = (TextView) findViewById(R.id.info);
 
+
+
         startBroadcast = (Button) findViewById(R.id.startBroadcast);
         stopBroadcast = (Button) findViewById(R.id.stopBroadcast);
 
         // we may already have one
         beaconTransmitter = ((BaseApplication) getApplication()).getApplicationBeaconTransmitter();
 
+        startBroadcast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // ID 1 is generated once
+                    // ID 2 is generated when the beacon is created
+                    // ID 3 is not used
+                    Beacon beacon = new Beacon.Builder()
+                            .setId1("F0C75D89-D12A-41DE-9097-45DF1A2604CE")
+                            .setId2("1")
+                            .setId3("1")
+                            .setTxPower(-59)
+                            .setDataFields(Arrays.asList(new Long[]{0l}))
+                            .build();
+                    BeaconParser beaconParser = new BeaconParser()
+                            //.setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25");
+                            // use iBeacon spec instead
+                            .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+                    beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+                    beaconTransmitter.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
+                    beaconTransmitter.setAdvertiseTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
+
+                    beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+                        @Override
+                        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                            super.onStartSuccess(settingsInEffect);
+
+                            info.setText("Beacon Started.");
+
+                            notification = new Notification(activity,
+                                    "Beacon Started",
+                                    "A beacon is broadcasting on this device, touch here for more options.",
+                                    true);
+                            notification.makeNotification();
+
+                            startBroadcast.setVisibility(View.GONE);
+                            stopBroadcast.setVisibility(View.VISIBLE);
+
+                            ((BaseApplication) getApplication()).setApplicationBeaconTransmitter(beaconTransmitter);
+                        }
+
+                        @Override
+                        public void onStartFailure(int errorCode) {
+                            super.onStartFailure(errorCode);
+
+                            info.setText("Beacon not Started. Error Code:" + String.valueOf(errorCode));
+                        }
+                    });
+                } else {
+                    info.setText("Beacon peripheral mode is not available on this device.");
+                }
+            }
+        });
+
+        stopBroadcast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (beaconTransmitter != null) {
+                    beaconTransmitter.stopAdvertising();
+                    beaconTransmitter.setBeacon(null);
+                    beaconTransmitter = null;
+                    ((BaseApplication) getApplication()).setApplicationBeaconTransmitter(null);
+                }
+
+                info.setText("Beacon Stopped.");
+
+                if (notification != null)
+                    notification.removeNotification();
+
+                startBroadcast.setVisibility(View.VISIBLE);
+                stopBroadcast.setVisibility(View.GONE);
+            }
+        });
+
         if (beaconTransmitter == null) {
             startBroadcast.setVisibility(View.VISIBLE);
             stopBroadcast.setVisibility(View.GONE);
-
-            startBroadcast.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Beacon beacon = new Beacon.Builder()
-                                .setId1("90DFF031-7297-4D0A-BD09-DE6D758DAB87")
-                                .setId2("EEA83F58-4DDF-43EA-BE47-EA184554E22D")
-                                .setId3("EAC334BA-A3DE-4194-9762-14631DE90E89")
-                                .setManufacturer(0x0118)
-                                .setTxPower(-59)
-                                .setDataFields(Arrays.asList(new Long[]{0l}))
-                                .build();
-                        BeaconParser beaconParser = new BeaconParser()
-                                //.setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25");
-                                // use iBeacon spec instead
-                                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-                        beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-                        beaconTransmitter.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
-                        beaconTransmitter.setAdvertiseTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
-
-                        beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
-                            @Override
-                            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-                                super.onStartSuccess(settingsInEffect);
-
-                                info.setText("Beacon Started.");
-
-                                notification = new Notification(activity,
-                                        "Beacon Started",
-                                        "A beacon is broadcasting on this device, touch here for more options.",
-                                        true);
-                                notification.makeNotification();
-
-                                startBroadcast.setVisibility(View.GONE);
-                                stopBroadcast.setVisibility(View.VISIBLE);
-
-                                ((BaseApplication) getApplication()).setApplicationBeaconTransmitter(beaconTransmitter);
-                            }
-
-                            @Override
-                            public void onStartFailure(int errorCode) {
-                                super.onStartFailure(errorCode);
-
-                                info.setText("Beacon not Started. Error Code:" + String.valueOf(errorCode));
-                            }
-                        });
-                    } else {
-                        info.setText("Beacon peripheral mode is not available on this device.");
-                    }
-                }
-            });
         } else {
             startBroadcast.setVisibility(View.GONE);
             stopBroadcast.setVisibility(View.VISIBLE);
-
-            stopBroadcast.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (beaconTransmitter != null) {
-                        beaconTransmitter.stopAdvertising();
-                        beaconTransmitter.setBeacon(null);
-                        ((BaseApplication) getApplication()).setApplicationBeaconTransmitter(null);
-                    }
-
-                    info.setText("Beacon Stopped.");
-
-                    if (notification != null)
-                        notification.removeNotification();
-
-                    startBroadcast.setVisibility(View.VISIBLE);
-                    stopBroadcast.setVisibility(View.GONE);
-                }
-            });
         }
     }
 

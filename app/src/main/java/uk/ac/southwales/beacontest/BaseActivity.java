@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
 
 /**
  * Created by nwillia2 on 16/01/2015.
@@ -30,6 +31,9 @@ public abstract class BaseActivity extends ActionBarActivity {
 //        }
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.setDebug(true);
+        // set beacon manager to use iBeacon spec
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
 
         verifyBluetooth();
     }
@@ -39,7 +43,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     private void verifyBluetooth() {
 
         try {
-            if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
+            if (!beaconManager.checkAvailability()) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Bluetooth not enabled");
                 builder.setMessage("Please enable bluetooth in settings and restart this application.");
